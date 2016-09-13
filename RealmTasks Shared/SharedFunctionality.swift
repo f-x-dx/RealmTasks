@@ -32,8 +32,8 @@ private let userRealmConfiguration = Realm.Configuration(
 
 private func setDefaultRealmConfigurationWithUser(user: User) {
     Realm.Configuration.defaultConfiguration = Realm.Configuration(
-        syncConfiguration: (user, Constants.syncServerURL!.URLByAppendingPathComponent("meta")),
-        objectTypes: [TaskListList.self, TaskListReference.self, ShareOffer.self, ShareRequest.self]
+        syncConfiguration: (user, Constants.syncServerURL!.URLByAppendingPathComponent("/~/meta")),
+        objectTypes: [ShareOffer.self, ShareRequest.self, TaskListList.self, TaskListReference.self]
     )
     realm = try! Realm()
 
@@ -96,7 +96,15 @@ func authenticate(username username: String, password: String, register: Bool, c
     }
 }
 
-func importAccessFile(URL: NSURL) -> Object? {
-    return nil
+func openShareURL(url: NSURL) {
+    guard let token = url.host where NSUUID(UUIDString: token) != nil else {
+        print("invalid share URL: \(url)")
+        return
+    }
+    // Accept share request
+    let realm = try! Realm()
+    try! realm.write {
+        realm.add(ShareRequest(token: token))
+    }
 }
-        
+

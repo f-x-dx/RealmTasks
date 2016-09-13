@@ -35,20 +35,15 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             logIn(animated: false)
         }
 
-        if let newTaskList = openAccessURL(launchOptions?[UIApplicationLaunchOptionsURLKey] as? NSURL) {
-            let containerController = window?.rootViewController as! ContainerViewController
-            containerController.transitionToList(newTaskList, animated: false)
+        if let url = launchOptions?[UIApplicationLaunchOptionsURLKey] as? NSURL {
+            openShareURL(url)
         }
 
         return true
     }
 
     func application(app: UIApplication, openURL url: NSURL, options: [String : AnyObject]) -> Bool {
-        if let newTaskList = openAccessURL(url) {
-            let containerController = window?.rootViewController as! ContainerViewController
-            containerController.transitionToList(newTaskList, animated: true)
-        }
-        
+        openShareURL(url)
         return true
     }
 
@@ -75,7 +70,9 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     func presentError(error: NSError) {
-        let alertController = UIAlertController(title: error.localizedDescription, message: error.localizedFailureReason ?? "", preferredStyle: .Alert)
+        let alertController = UIAlertController(title: error.localizedDescription,
+                                              message: error.localizedFailureReason ?? "",
+                                       preferredStyle: .Alert)
         alertController.addAction(UIAlertAction(title: "Try Again", style: .Default) { _ in
             self.logIn()
         })

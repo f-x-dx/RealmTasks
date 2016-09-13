@@ -18,10 +18,12 @@
  *
  **************************************************************************/
 
+// FIXME: This file should be split up.
+// swiftlint:disable file_length
+
 import Cartography
 import RealmSwift
 import UIKit
-import TOActionSheet
 
 extension UIView {
     private func removeAllConstraints() {
@@ -45,7 +47,10 @@ private enum NavDirection {
 
 // MARK: View Controller
 
-final class ViewController<Item: Object, Parent: Object where Item: CellPresentable, Parent: ListPresentable, Parent.Item == Item>: UIViewController, UITableViewDataSource, UITableViewDelegate, UIGestureRecognizerDelegate {
+// FIXME: This class should be split up.
+// swiftlint:disable type_body_length
+final class ViewController<Item: Object, Parent: Object where Item: CellPresentable, Parent: ListPresentable, Parent.Item == Item>:
+    UIViewController, UITableViewDataSource, UITableViewDelegate, UIGestureRecognizerDelegate {
 
     // MARK: Properties
 
@@ -189,8 +194,10 @@ final class ViewController<Item: Object, Parent: Object where Item: CellPresenta
             let height = max(view.frame.height - tableView.contentInset.top, tableView.contentSize.height + tableView.contentInset.bottom)
             tableViewContentView.frame = CGRect(x: 0, y: -tableView.contentOffset.y, width: view.frame.width, height: height)
         } else if context == &titleKVOContext {
-            title = (parent as! CellPresentable).text
-            parentViewController?.title = title
+            if let parent = parent as? TaskList {
+                title = parent.text
+                parentViewController?.title = title
+            }
         } else {
             super.observeValueForKeyPath(keyPath, ofObject: object, change: change, context: context)
         }
@@ -338,7 +345,7 @@ final class ViewController<Item: Object, Parent: Object where Item: CellPresenta
             var center = cell.center
             snapshot = cell.snapshotViewAfterScreenUpdates(false)
             snapshot.layer.shadowColor = UIColor.blackColor().CGColor
-            snapshot.layer.shadowOffset = CGSizeMake(-5, 0)
+            snapshot.layer.shadowOffset = CGSize(width: -5, height: 0)
             snapshot.layer.shadowRadius = 5
             snapshot.center = center
             cell.hidden = true
@@ -404,7 +411,7 @@ final class ViewController<Item: Object, Parent: Object where Item: CellPresenta
             self.startIndexPath = nil
             self.destinationIndexPath = nil
         default:
-            break;
+            break
         }
     }
 
@@ -526,11 +533,13 @@ final class ViewController<Item: Object, Parent: Object where Item: CellPresenta
 
     // MARK: UIScrollViewDelegate methods
 
-    func scrollViewDidScroll(scrollView: UIScrollView)  {
-        func removeVC(vc: UIViewController?) {
+    // FIXME: This could easily be refactored to avoid such a high CC.
+    // swiftlint:disable:next cyclomatic_complexity
+    func scrollViewDidScroll(scrollView: UIScrollView) {
+        func removeVC(viewController: UIViewController?) {
             if scrollView.dragging {
-                vc?.view.removeFromSuperview()
-                vc?.removeFromParentViewController()
+                viewController?.view.removeFromSuperview()
+                viewController?.removeFromParentViewController()
             }
         }
 
@@ -620,7 +629,7 @@ final class ViewController<Item: Object, Parent: Object where Item: CellPresenta
                 }
                 tableView.deleteRowsAtIndexPaths(indexPathsToDelete, withRowAnimation: .None)
                 skipNextNotification()
-                
+
                 vibrate()
             }
             return
@@ -749,42 +758,31 @@ final class ViewController<Item: Object, Parent: Object where Item: CellPresenta
         }
     }
 
-    // MARK: General UI Callbacks
-    private func shareButtonTapped() {
-        let taskList = self.parent as! TaskList
-        let id = taskList.realm?.configuration.syncConfiguration?.realmURL.lastPathComponent
-        let taskListReference = try! Realm().objectForPrimaryKey(TaskListReference.self, key: id)
+    // MARK: Shake To Share
 
-        let shareOffer = ShareOffer()
-        shareOffer.taskListReference = taskListReference
-
-        try! Realm().write({
-            try! Realm().add(shareOffer)
-        })
-
-        let shareFileURL = RealmSharing.URLForGeneratedAccessFile(taskList, token: shareOffer.token)
-
-//       // Pass the token to the activity view controller
-        let containerViewController = self.parentViewController as! ContainerViewController
-
-        let activityViewController = UIActivityViewController(activityItems: [shareFileURL], applicationActivities: nil)
-        activityViewController.modalPresentationStyle = .Popover
-        activityViewController.popoverPresentationController?.sourceView = containerViewController.titleLabel
-        presentViewController(activityViewController, animated: true, completion: nil)
+    override func canBecomeFirstResponder() -> Bool {
+        return true
     }
 
     override func motionEnded(motion: UIEventSubtype, withEvent event: UIEvent?) {
-        if motion != .MotionShake {
+        guard motion == .MotionShake, let taskList = parent as? TaskList else {
             return
         }
+        let id = taskList.realm?.configuration.syncConfiguration?.realmURL.lastPathComponent
 
-        let actionSheet = TOActionSheet(style: .Dark)
-        actionSheet.title = title
-        actionSheet.addButtonWithTitle("Share List", tappedBlock: {
-            self.shareButtonTapped()
-        })
+        let shareOffer = ShareOffer()
+        let realm = try! Realm()
+        shareOffer.listName = taskList.text
+        shareOffer.listPath = "/\(realm.configuration.syncConfiguration!.user.identity)/\(id!)"
 
-        actionSheet.showFromView(view, inView: view.superview)
+        try! realm.write {
+            realm.add(shareOffer)
+        }
+
+        // Pass the token to the activity view controller
+        let activityViewController = UIActivityViewController(activityItems: [shareOffer.url], applicationActivities: nil)
+        presentViewController(activityViewController, animated: true, completion: nil)
+        print("sharing URL: \(shareOffer.url)")
     }
 
     // MARK: Colors

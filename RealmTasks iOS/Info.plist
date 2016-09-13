@@ -59,22 +59,15 @@
 		<string>UIInterfaceOrientationLandscapeRight</string>
 		<string>UIInterfaceOrientationPortraitUpsideDown</string>
 	</array>
-	<key>UTExportedTypeDeclarations</key>
+	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
-			<key>UTTypeConformsTo</key>
+			<key>CFBundleURLName</key>
+			<string>io.realm.realmtasks</string>
+			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>public.data</string>
-			</array>
-			<key>UTTypeDescription</key>
-			<string>Realm Tasks Access File</string>
-			<key>UTTypeIdentifier</key>
-			<string>io.realm.realmtasks.share</string>
-			<key>UTTypeTagSpecification</key>
-			<dict>
-				<key>public.filename-extension</key>
 				<string>realmtasks</string>
-			</dict>
+			</array>
 		</dict>
 	</array>
 </dict>

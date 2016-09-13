@@ -25,25 +25,11 @@ import RealmSwift
 // https://github.com/realm/realm-sync/issues/694
 var syncedRealmsHolder = [Realm]()
 
-protocol ListPresentable {
-    associatedtype Item: Object, CellPresentable
-    var items: List<Item> { get }
-    var completedCount: Int { get }
-    var uncompletedCount: Int { get }
-}
-
-protocol CellPresentable {
-    var text: String { get set }
-    var completed: Bool { get set }
-    var isCompletable: Bool { get }
-}
-
 final class TaskListList: Object, ListPresentable {
     let items = List<TaskListReference>()
-    dynamic var id = 0
+    dynamic var id = 0 // swiftlint:disable:this variable_name
 
     var completedCount: Int { return 0 }
-    var uncompletedCount: Int { return items.count }
 
     override static func primaryKey() -> String? {
         return "id"
@@ -59,11 +45,14 @@ final class TaskListReference: Object, CellPresentable {
     // https://github.com/realm/realm-cocoa-private/issues/230
     dynamic var textMirror = ""
 
+    dynamic var fullServerPath: String?
+
+    var completedCount: Int { return 0 }
+    var uncompletedCount: Int { return items.count }
+
     override static func primaryKey() -> String? {
         return "id"
     }
-
-    dynamic var path = ""
 
     // Proxied Properties
     var text: String { get { return list.text } set { try! list.realm!.write { list.text = newValue }; textMirror = newValue } }
@@ -79,10 +68,8 @@ final class TaskListReference: Object, CellPresentable {
     // List Realm Properties
     var listRealmConfiguration: Realm.Configuration {
         let user = Realm.Configuration.defaultConfiguration.syncConfiguration!.user
-        return Realm.Configuration(
-            syncConfiguration: (user, Constants.syncServerURL!.URLByAppendingPathComponent("\(id)")),
-            objectTypes: [TaskList.self, Task.self]
-        )
+        let url = Constants.syncServerURL!.URLByAppendingPathComponent(fullServerPath ?? "/~/list-\(id)")
+        return Realm.Configuration(syncConfiguration: (user, url), objectTypes: [TaskList.self, Task.self])
     }
     func listRealm() throws -> Realm {
         let realm = try Realm(configuration: listRealmConfiguration)
@@ -106,14 +93,13 @@ final class TaskListReference: Object, CellPresentable {
 final class TaskList: Object, ListPresentable {
     dynamic var text = ""
     dynamic var completed = false
-    dynamic var id = 0
+    dynamic var id = 0 // swiftlint:disable:this variable_name
     let items = List<Task>()
 
     var isCompletable: Bool {
         return !items.filter("completed == false").isEmpty
     }
     var completedCount: Int { return items.filter("completed == true").count }
-    var uncompletedCount: Int { return items.filter("completed == false").count }
 
     override static func primaryKey() -> String? {
         return "id"
@@ -150,15 +136,14 @@ final class PersistedUser: Object {
 }
 
 // MARK: Sharing
-final class ShareOffer: Object {
-    dynamic var token = NSUUID().UUIDString
-    dynamic var taskListReference: TaskListReference?
 
-    // is computed by the client,
-    // contains the token
-    var uri: String {
-        return "realmtasks://share/\(token)"
-    }
+final class ShareOffer: Object {
+    dynamic var expires = 0
+    dynamic var listName = ""
+    dynamic var listPath = ""
+    dynamic var token = NSUUID().UUIDString
+
+    var url: String { return "realmtasks://\(token)" }
 
     override static func primaryKey() -> String {
         return "token"
@@ -166,16 +151,11 @@ final class ShareOffer: Object {
 }
 
 final class ShareRequest: Object {
-    dynamic var token: String = ""
-    dynamic var taskListReference: TaskListReference? // is filled by the server-side client
+    dynamic var token = ""
 
-    // filled by the client with the received URL,
-    // extracts and fills the token
-    //var uri: String { set { /* … */ } }
-
-    override static func primaryKey() -> String {
-        return "token"
+    convenience init(token: String) {
+        self.init()
+        self.token = token
     }
 }
-
 
