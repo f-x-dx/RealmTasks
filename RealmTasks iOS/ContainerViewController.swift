@@ -49,7 +49,6 @@ class ContainerViewController: UIViewController {
         return .LightContent
     }
 
-<<<<<<< HEAD
     func transitionToList(taskList: TaskList, animated: Bool) {
         let viewControllers = self.childViewControllers
         var snapshotView: UIView? = nil
