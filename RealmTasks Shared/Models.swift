@@ -47,9 +47,6 @@ final class TaskListReference: Object, CellPresentable {
 
     dynamic var fullServerPath: String?
 
-    var completedCount: Int { return 0 }
-    var uncompletedCount: Int { return items.count }
-
     override static func primaryKey() -> String? {
         return "id"
     }
