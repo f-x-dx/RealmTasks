@@ -78,15 +78,4 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         })
         self.window?.rootViewController?.presentViewController(alertController, animated: true, completion: nil)
     }
-
-    func openAccessURL(URL: NSURL?) -> TaskList? {
-        guard let URL = URL else {
-            return nil
-        }
-
-        let taskList = (importAccessFile(URL) as! TaskList)
-        try! NSFileManager.defaultManager().removeItemAtURL(URL)
-
-        return taskList
-    }
 }
