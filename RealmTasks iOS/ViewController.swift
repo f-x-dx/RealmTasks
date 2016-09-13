@@ -760,10 +760,6 @@ final class ViewController<Item: Object, Parent: Object where Item: CellPresenta
 
     // MARK: Shake To Share
 
-    override func canBecomeFirstResponder() -> Bool {
-        return true
-    }
-
     override func motionEnded(motion: UIEventSubtype, withEvent event: UIEvent?) {
         guard motion == .MotionShake, let taskList = parent as? TaskList else {
             return
