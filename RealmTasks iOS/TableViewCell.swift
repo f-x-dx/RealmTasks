@@ -328,7 +328,7 @@ final class TableViewCell<Item: Object where Item: CellPresentable>: UITableView
                     self.contentView.frame.origin.x = 0
                 }
                 completionBlock = {
-                    if !(self.item as Object).invalidated && !self.displayingList {
+                    if !(self.item as Object).invalidated {
                         self.setCompleted(!self.item.completed, animated: true)
                     }
                 }
@@ -383,6 +383,11 @@ final class TableViewCell<Item: Object where Item: CellPresentable>: UITableView
     // MARK: Actions
 
     private func setCompleted(completed: Bool, animated: Bool = false) {
+        if displayingList && animated {
+            itemCompleted?(item)
+            return
+        }
+        
         completed ? textView.strike() : textView.unstrike()
         overlayView.hidden = !completed
         let updateColor = { [unowned self] in
