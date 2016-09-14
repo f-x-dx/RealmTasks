@@ -69,9 +69,14 @@ final class TableViewCell<Item: Object where Item: CellPresentable>: UITableView
                     countLabel.alpha = 1
                 }
             }
+            
+            updateLeftImageView()
         }
     }
     let navHintView = NavHintView()
+    var displayingList:Bool {
+        return (self.item! is TaskListReference)
+    }
 
     // Callbacks
     var itemCompleted: ((Item) -> ())? = nil
@@ -89,9 +94,12 @@ final class TableViewCell<Item: Object where Item: CellPresentable>: UITableView
     private let countLabel = UILabel()
 
     // Assets
-    private let doneIconView = UIImageView(image: UIImage(named: "DoneIcon"))
-    private let deleteIconView = UIImageView(image: UIImage(named: "DeleteIcon"))
-
+    private let doneImage = UIImage(named: "DoneIcon")
+    private let shareImage = UIImage(named: "ShareIcon")
+    
+    private let leftIconView    = UIImageView()
+    private let deleteIconView  = UIImageView(image: UIImage(named: "DeleteIcon"))
+    
     // MARK: Initializers
 
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
@@ -130,11 +138,11 @@ final class TableViewCell<Item: Object where Item: CellPresentable>: UITableView
     }
 
     private func setupIconViews() {
-        doneIconView.center = center
-        doneIconView.frame.origin.x = 20
-        doneIconView.alpha = 0
-        doneIconView.autoresizingMask = [.FlexibleRightMargin, .FlexibleTopMargin, .FlexibleBottomMargin]
-        insertSubview(doneIconView, belowSubview: contentView)
+        leftIconView.center = center
+        leftIconView.frame.origin.x = 20
+        leftIconView.alpha = 0
+        leftIconView.autoresizingMask = [.FlexibleRightMargin, .FlexibleTopMargin, .FlexibleBottomMargin]
+        insertSubview(leftIconView, belowSubview: contentView)
 
         deleteIconView.center = center
         deleteIconView.frame.origin.x = bounds.width - deleteIconView.bounds.width - 20
@@ -143,6 +151,21 @@ final class TableViewCell<Item: Object where Item: CellPresentable>: UITableView
         insertSubview(deleteIconView, belowSubview: contentView)
     }
 
+    private func updateLeftImageView() {
+        if displayingList {
+            leftIconView.image = shareImage
+        }
+        else {
+            leftIconView.image = doneImage
+        }
+        
+        leftIconView.sizeToFit()
+        leftIconView.center = center
+        leftIconView.frame.origin.x = 20
+        
+        setNeedsLayout()
+    }
+    
     private func setupOverlayView() {
         overlayView.backgroundColor = .completeDimBackgroundColor()
         overlayView.hidden = true
@@ -233,7 +256,7 @@ final class TableViewCell<Item: Object where Item: CellPresentable>: UITableView
         switch recognizer.state {
         case .Began:
             originalDeleteIconCenter = deleteIconView.center
-            originalDoneIconCenter = doneIconView.center
+            originalDoneIconCenter = leftIconView.center
 
             releaseAction = nil
         case .Changed:
@@ -253,7 +276,7 @@ final class TableViewCell<Item: Object where Item: CellPresentable>: UITableView
                 }
             } else if translation.x > iconWidth {
                 let offset = (translation.x - iconWidth) / 3
-                doneIconView.center = CGPoint(x: originalDoneIconCenter.x + offset, y: originalDoneIconCenter.y)
+                leftIconView.center = CGPoint(x: originalDoneIconCenter.x + offset, y: originalDoneIconCenter.y)
                 x = iconWidth + offset
             } else {
                 x = translation.x
@@ -265,28 +288,32 @@ final class TableViewCell<Item: Object where Item: CellPresentable>: UITableView
             releaseAction = fractionOfThreshold >= 1 ? (x > 0 ? .Complete : .Delete) : nil
 
             if x > 0 {
-                doneIconView.alpha = CGFloat(fractionOfThreshold)
+                leftIconView.alpha = CGFloat(fractionOfThreshold)
             } else {
                 deleteIconView.alpha = CGFloat(fractionOfThreshold)
             }
 
             if !(item as Object).invalidated && !item.completed {
-                overlayView.backgroundColor = .completeGreenBackgroundColor()
-                overlayView.hidden = releaseAction != .Complete
-                if contentView.frame.origin.x > 0 {
-                    textView.unstrike()
-                    textView.strike(fractionOfThreshold)
-                } else {
-                    releaseAction == .Complete ? textView.strike() : textView.unstrike()
+                if !displayingList {
+                    overlayView.backgroundColor = .completeGreenBackgroundColor()
+                    overlayView.hidden = releaseAction != .Complete
+                    if contentView.frame.origin.x > 0 {
+                        textView.unstrike()
+                        textView.strike(fractionOfThreshold)
+                    } else {
+                        releaseAction == .Complete ? textView.strike() : textView.unstrike()
+                    }
                 }
             } else {
-                overlayView.hidden = releaseAction == .Complete
-                textView.alpha = releaseAction == .Complete ? 1 : 0.3
-                if contentView.frame.origin.x > 0 {
-                    textView.unstrike()
-                    textView.strike(1 - fractionOfThreshold)
-                } else {
-                    releaseAction == .Complete ? textView.unstrike() : textView.strike()
+                if !displayingList {
+                    overlayView.hidden = releaseAction == .Complete
+                    textView.alpha = releaseAction == .Complete ? 1 : 0.3
+                    if contentView.frame.origin.x > 0 && !displayingList {
+                        textView.unstrike()
+                        textView.strike(1 - fractionOfThreshold)
+                    } else {
+                        releaseAction == .Complete ? textView.unstrike() : textView.strike()
+                    }
                 }
             }
         case .Ended:
@@ -301,7 +328,7 @@ final class TableViewCell<Item: Object where Item: CellPresentable>: UITableView
                     self.contentView.frame.origin.x = 0
                 }
                 completionBlock = {
-                    if !(self.item as Object).invalidated {
+                    if !(self.item as Object).invalidated && !self.displayingList {
                         self.setCompleted(!self.item.completed, animated: true)
                     }
                 }
@@ -327,8 +354,8 @@ final class TableViewCell<Item: Object where Item: CellPresentable>: UITableView
             UIView.animateWithDuration(0.2, animations: animationBlock) { _ in
                 completionBlock()
 
-                self.doneIconView.frame.origin.x = 20
-                self.doneIconView.alpha = 0
+                self.leftIconView.frame.origin.x = 20
+                self.leftIconView.alpha = 0
 
                 self.deleteIconView.frame.origin.x = self.bounds.width - self.deleteIconView.bounds.width - 20
                 self.deleteIconView.alpha = 0
