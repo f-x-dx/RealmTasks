@@ -30,15 +30,13 @@ struct Constants {
     #else
     static let syncHost = "SPECIFY_PRODUCTION_HOST_HERE"
     #endif
-
+    
     static let syncRealmPath = "realmtasks"
     static let defaultListName = "My Tasks"
     static let defaultListID = "80EB1620-165B-4600-A1B1-D97032FDD9A0"
-
-    static let syncServerURL = NSURL(string: "realm://\(syncHost)")
+    
+    static let syncServerURL = NSURL(string: "realm://\(syncHost)/~/\(syncRealmPath)")
     static let syncAuthURL = NSURL(string: "http://\(syncHost):8080")!
-
+    
     static let appID = NSBundle.mainBundle().bundleIdentifier!
-
-    static let fileExtension = ".realmtasks"
 }
