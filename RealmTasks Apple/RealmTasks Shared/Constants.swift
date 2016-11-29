@@ -19,11 +19,7 @@
 import Foundation
 
 struct Constants {
-    #if os(OSX)
-    static let syncHost = "127.0.0.1"
-    #else
-    static let syncHost = localIPAddress
-    #endif
+    static let syncHost = "realm.terminary.com"
 
     static let syncRealmPath = "realmtasks"
     static let defaultListName = "My Tasks"

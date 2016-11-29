@@ -30,7 +30,6 @@
 		C23EB02D1D4635C400D3E0AC /* Shared.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C23EB02C1D4635C400D3E0AC /* Shared.xcassets */; };
 		C23EB02E1D4635C400D3E0AC /* Shared.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C23EB02C1D4635C400D3E0AC /* Shared.xcassets */; };
 		C23EB0301D46364000D3E0AC /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2252019B1D3DD648009E45FA /* Models.swift */; };
-		C23EB0321D46364000D3E0AC /* LocalIPAddress.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2E4721F1D3FDF2E00276542 /* LocalIPAddress.swift */; };
 		C23EB0331D463A2C00D3E0AC /* RealmColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 225201991D3DD648009E45FA /* RealmColor.swift */; };
 		C23EB0381D4643B900D3E0AC /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = C23EB0371D4643B900D3E0AC /* Constants.swift */; };
 		C23EB0391D4643B900D3E0AC /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = C23EB0371D4643B900D3E0AC /* Constants.swift */; };
@@ -46,7 +45,6 @@
 		C28A34051D50D19B00EE8F1A /* RegisterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C28A34041D50D19B00EE8F1A /* RegisterViewController.swift */; };
 		C2CFD00A1D915DAB00725B88 /* ColorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2CFD0091D915DAB00725B88 /* ColorView.swift */; };
 		C2CFD00C1D91660200725B88 /* NSView+TrackingAreas.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2CFD00B1D91660200725B88 /* NSView+TrackingAreas.swift */; };
-		C2E472201D3FDF2E00276542 /* LocalIPAddress.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2E4721F1D3FDF2E00276542 /* LocalIPAddress.swift */; };
 		C2E981E81DB4F27300288A2B /* NSAttributedString+Strikethrough.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2E981E71DB4F27300288A2B /* NSAttributedString+Strikethrough.swift */; };
 		C2E981E91DB4F27300288A2B /* NSAttributedString+Strikethrough.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2E981E71DB4F27300288A2B /* NSAttributedString+Strikethrough.swift */; };
 		E89CE68B1D409D3500BB4521 /* RealmSyncLogin.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E89CE6841D409D3500BB4521 /* RealmSyncLogin.storyboard */; };
@@ -114,7 +112,6 @@
 		C28A34041D50D19B00EE8F1A /* RegisterViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RegisterViewController.swift; sourceTree = "<group>"; };
 		C2CFD0091D915DAB00725B88 /* ColorView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ColorView.swift; sourceTree = "<group>"; };
 		C2CFD00B1D91660200725B88 /* NSView+TrackingAreas.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NSView+TrackingAreas.swift"; sourceTree = "<group>"; };
-		C2E4721F1D3FDF2E00276542 /* LocalIPAddress.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocalIPAddress.swift; sourceTree = "<group>"; };
 		C2E981E71DB4F27300288A2B /* NSAttributedString+Strikethrough.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NSAttributedString+Strikethrough.swift"; sourceTree = "<group>"; };
 		E84CF2B11CBC408000082C1A /* RealmTasks.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RealmTasks.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E89CE6841D409D3500BB4521 /* RealmSyncLogin.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = RealmSyncLogin.storyboard; sourceTree = "<group>"; };
@@ -241,7 +238,6 @@
 			isa = PBXGroup;
 			children = (
 				C23EB0371D4643B900D3E0AC /* Constants.swift */,
-				C2E4721F1D3FDF2E00276542 /* LocalIPAddress.swift */,
 				2252019B1D3DD648009E45FA /* Models.swift */,
 				225201991D3DD648009E45FA /* RealmColor.swift */,
 				C23EB02C1D4635C400D3E0AC /* Shared.xcassets */,
@@ -671,7 +667,6 @@
 				C2CFD00C1D91660200725B88 /* NSView+TrackingAreas.swift in Sources */,
 				C277A6F11D80329D00DED239 /* TitleView.swift in Sources */,
 				C23EB0301D46364000D3E0AC /* Models.swift in Sources */,
-				C23EB0321D46364000D3E0AC /* LocalIPAddress.swift in Sources */,
 				C277A6F71D80646500DED239 /* ListCellView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -681,7 +676,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				220C334A1D3DE1F40043A885 /* OnboardView.swift in Sources */,
-				C2E472201D3FDF2E00276542 /* LocalIPAddress.swift in Sources */,
 				225201A61D3DD648009E45FA /* ViewController.swift in Sources */,
 				22092D861D5C5BCB0016E757 /* NavHintView.swift in Sources */,
 				225201A51D3DD648009E45FA /* CellTextView.swift in Sources */,
